@@ -1,3 +1,5 @@
+## link: https://gurobi.github.io/modeling-examples/facility_location/
+
 # -*- coding: utf-8 -*-
 """facility_location.ipynb
 
