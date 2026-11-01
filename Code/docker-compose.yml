@@ -1,0 +1,58 @@
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql-container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: OSUGoPokes
+      MYSQL_DATABASE: iem4723_mysql_tutorial
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin-container
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: OSUGoPokes
+    depends_on:
+      - mysql
+
+  redis:
+    image: redis:7
+    container_name: redis-container
+    restart: always
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+
+  jupyter:
+    build: .
+    image: iem4723-jupyter:latest
+    container_name: jupyter-container
+    restart: always
+    ports:
+      - "4444:8888"          # http://localhost:4444
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+      JUPYTER_TOKEN: "OSUGoPokes"
+      GRB_LICENSE_FILE: /opt/gurobi/gurobi.lic
+    volumes:
+      - .:/home/jovyan/iem4723/
+      # Your WLS academic license file, read-only, kept outside the image
+      - ./gurobi.lic:/opt/gurobi/gurobi.lic:ro
+    depends_on:
+      - mysql
+      - redis
+
+volumes:
+  mysql-data:
+  redis-data:
